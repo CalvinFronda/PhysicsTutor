@@ -13,6 +13,10 @@
  */
 package physicstutor.ui;
 
+import physicstutor.simulation.SimulationScenario;
+
+import javax.swing.JPanel;
+
 /**
  * Purpose:
  *
@@ -22,5 +26,13 @@ public interface LearningMode
 {
 	/** Label shown on the tab. */
 	String getName();
+	
+	JPanel getPanel();
+	
+	void setScenario(SimulationScenario scenario);
+	
+	void activate();
+	
+	void deactivate();
 	
 }

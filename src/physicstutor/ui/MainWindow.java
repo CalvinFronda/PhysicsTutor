@@ -31,7 +31,7 @@ import java.util.List;
  */
 public class MainWindow extends JFrame
 {
-
+	
 	private final List<LearningMode> modes = new ArrayList<>();
 	private final List<SimulationScenario> scenarios = new ArrayList<>();
 	private SimulationScenario active;
@@ -43,13 +43,16 @@ public class MainWindow extends JFrame
 	{
 		super("Physics Tutor");
 		
-		// Placeholder tabs. Later, each one becomes a LearningMode's panel.
-		tabs.addTab("Explore",
-				new JLabel("Explore mode coming soon", SwingConstants.CENTER));
-		tabs.addTab("Analyze",
-				new JLabel("Analyze mode coming soon", SwingConstants.CENTER));
-		tabs.addTab("Practice",
-				new JLabel("Practice mode coming soon", SwingConstants.CENTER));
+		modes.add(new AnalyzeMode());
+		
+		for (LearningMode m : modes)
+		{
+			tabs.addTab(m.getName(), m.getPanel());
+		}
+		tabs.addChangeListener(
+				e -> showMode(modes.get(tabs.getSelectedIndex())));
+		
+	
 		
 		setLayout(new BorderLayout());
 		add(tabs, BorderLayout.CENTER);
@@ -57,5 +60,26 @@ public class MainWindow extends JFrame
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(1000, 650);
 		setLocationRelativeTo(null);
+		
 	}
+	
+	public void setScenario(SimulationScenario s)
+	{
+		if (s == null || s == active) return;
+		active = s;
+		active.reset();
+		for (LearningMode m : modes)
+		{
+			m.setScenario(s);
+		}
+	}
+	
+	public void showMode(LearningMode m)
+	{
+		if (m == currentMode) return;
+		if (currentMode != null) currentMode.deactivate();
+		currentMode = m;
+		currentMode.activate();
+	}
+	
 }
