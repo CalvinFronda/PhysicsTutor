@@ -14,25 +14,29 @@
  */
 package physicstutor.ui;
 
+import physicstutor.simulation.Equation;
 import physicstutor.simulation.SimulationScenario;
 import physicstutor.learning.FreeBodyDiagram;
+import physicstutor.physics.Force;
+import physicstutor.simulation.Variable;
 
 import javax.swing.*;
 import java.awt.*;
 import javax.swing.table.DefaultTableModel;
 
 /**
- * Purpose: The reponsibility of AnalyzeMode is ...
+ * Purpose: Shows how an object move depending on the scenario
  *
- * AnalyzeMode is-a ...
- * AnalyzeMode is ...
+ * AnalyzeMode is-a LearningMode
  */
 public class AnalyzeMode implements LearningMode
 {
 	private SimulationScenario scenario;
 	private FreeBodyDiagram diagram;
 	private final FBDPanel view = new FBDPanel();
+	private final JPanel root = new JPanel(new BorderLayout());
 	
+	// Table header
 	private final DefaultTableModel forceModel = new DefaultTableModel(
 			new String[] { "Force", "|F| (N)", "Fx (N)", "Fy (N)",
 					"Direction (°)" },
@@ -48,8 +52,6 @@ public class AnalyzeMode implements LearningMode
 	private final DefaultListModel<String> knownsModel = new DefaultListModel<>();
 	private final DefaultListModel<String> unknownsModel = new DefaultListModel<>();
 	private final DefaultListModel<String> equationsModel = new DefaultListModel<>();
-	
-	private final JPanel root = new JPanel(new BorderLayout());
 	
 	public AnalyzeMode()
 	{
@@ -90,15 +92,48 @@ public class AnalyzeMode implements LearningMode
 		return p;
 	}
 	
-	@Override
-	public void setScenario(SimulationScenario scenario)
-	{
-		this.scenario = scenario;
-		refresh();
-	}
-	
+	/**
+	 * 
+	 * Purpose: rebuilds diagram if scenario is changed or if user wants to
+	 * reset current scenario
+	 */
 	public void refresh()
 	{
+		if (scenario == null) return;
+		
+		diagram = new FreeBodyDiagram(scenario);
+		view.setDiagram(diagram);
+		
+		forceModel.setRowCount(0);
+		for (Force f : diagram.getForces())
+		{
+			forceModel.addRow(new Object[] {
+					
+					f.getLabel(),
+					
+					formatString(f.getMagnitude()), formatString(f.getVector().getX()),
+					formatString(f.getVector().getY()),
+					formatString(Math.toDegrees(f.getVector().angle())) });
+		}
+		
+
+		
+		knownsModel.clear();
+		for (Variable v : scenario.getKnowns())
+			knownsModel.addElement(v.toString());
+		
+		unknownsModel.clear();
+		for (Variable v : scenario.getUnknowns())
+			unknownsModel.addElement(v.getName() + "  (" + v.getSymbol() + ")");
+		
+		equationsModel.clear();
+		for (Equation e : scenario.getEquations())
+			equationsModel.addElement(e.toString());
+	}
+	
+	private static String formatString(double d)
+	{
+		return String.format("%.2f", d);
 	}
 	
 	@Override
@@ -111,6 +146,13 @@ public class AnalyzeMode implements LearningMode
 	public String getName()
 	{
 		return "Analyze";
+	}
+	
+	@Override
+	public void setScenario(SimulationScenario scenario)
+	{
+		this.scenario = scenario;
+		refresh();
 	}
 	
 	@Override

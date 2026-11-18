@@ -15,15 +15,14 @@
 package physicstutor.physics;
 
 /**
- * Purpose: The reponsibility of Force is ...
+ * Purpose: Shows a labeled force acting on an object
  *
- * Force is-a ...
- * Force is ...
  */
 public class Force
 {
 	private final String label;
 	private final Vector2D vector;
+	
 	private final ForceType type;
 	
 	public Force(String label, Vector2D vector, ForceType type)
@@ -31,6 +30,12 @@ public class Force
 		this.label = label;
 		this.vector = vector;
 		this.type = type;
+		
+	}
+	
+	public double getMagnitude()
+	{
+		return vector.magnitude();
 	}
 	
 	public String getLabel()

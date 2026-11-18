@@ -15,10 +15,8 @@
 package physicstutor.physics;
 
 /**
- * Purpose: The reponsibility of ForceType is ...
+ * Purpose: enum values for FBDPanel to choose an arrow color
  *
- * ForceType is-a ...
- * ForceType is ...
  */
 public enum ForceType
 {

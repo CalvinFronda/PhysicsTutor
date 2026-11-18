@@ -14,12 +14,15 @@
 package physicstutor.ui;
 
 import physicstutor.simulation.SimulationScenario;
-
-import javax.swing.*;
+import physicstutor.simulation.InclinedPlane;
+import javax.swing.BorderFactory;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,8 +46,11 @@ public class MainWindow extends JFrame
 	{
 		super("Physics Tutor");
 		
-		modes.add(new AnalyzeMode());
+		scenarios.add(new InclinedPlane());
 		
+		
+		modes.add(new AnalyzeMode());
+		modes.add(new ExploreMode());
 		for (LearningMode m : modes)
 		{
 			tabs.addTab(m.getName(), m.getPanel());
@@ -52,10 +58,22 @@ public class MainWindow extends JFrame
 		tabs.addChangeListener(
 				e -> showMode(modes.get(tabs.getSelectedIndex())));
 		
-	
+		JComboBox<SimulationScenario> picker = new JComboBox<>(
+				scenarios.toArray(new SimulationScenario[0]));
+		picker.addActionListener(e -> setScenario(
+				(SimulationScenario) picker.getSelectedItem()));
+		
+		JPanel top = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		top.setBorder(BorderFactory.createEmptyBorder(4, 4, 0, 4));
+		top.add(new JLabel("Scenario:"));
+		top.add(picker);
 		
 		setLayout(new BorderLayout());
+		add(top, BorderLayout.NORTH);
 		add(tabs, BorderLayout.CENTER);
+		
+		setScenario(scenarios.get(0));
+		showMode(modes.get(0));
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(1000, 650);
