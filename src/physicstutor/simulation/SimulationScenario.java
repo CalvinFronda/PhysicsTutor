@@ -21,7 +21,6 @@ import physicstutor.physics.Particle;
 
 /**
  * Purpose: Base class for scenarios
- *
  */
 public abstract class SimulationScenario
 {
@@ -44,7 +43,15 @@ public abstract class SimulationScenario
 		return List.copyOf(variables);
 	}
 	
-	/** Angle (radians) of the surface the object rests on, or NaN if there isn't one. */
+	public Particle getObject()
+	{
+		return object;
+	}
+	
+	/**
+	 * Angle (radians) of the surface the object rests on, or NaN if there isn't
+	 * one.
+	 */
 	public double getSurfaceAngle()
 	{
 		return Double.NaN;
@@ -56,29 +63,29 @@ public abstract class SimulationScenario
 		return variables.stream().filter(Variable::isAdjustable).toList();
 	}
 	
-	/** Equations that apply to this scenario. */
-	public abstract List<Equation> getEquations();
-	
-	/** Advance the scenario by dt seconds. */
-	public abstract void update(double dt);
-	
 	/** Values the scenario calculates ("unknowns" in Analyze mode). */
 	public List<Variable> getUnknowns()
 	{
 		return variables.stream().filter(v -> !v.isAdjustable()).toList();
 	}
 	
-	public abstract List<Force> getForces();
-	
 	public void reset()
 	{
-		return;
+		object.reset();
 	}
+	
+	/** Equations that apply to this scenario. */
+	public abstract List<Equation> getEquations();
+	
+	/** Advance the scenario by dt seconds. */
+	public abstract void update(double dt);
+	
+	public abstract List<Force> getForces();
 	
 	// so a JComboBox shows the name
 	@Override
 	public String toString()
 	{
 		return name;
-	} 
+	}
 }

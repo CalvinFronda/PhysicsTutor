@@ -28,7 +28,7 @@ import java.util.List;
  */
 public class InclinedPlane extends SimulationScenario
 {
-	// Knowns (adjustable) these are just set at first but can change if 
+	// Knowns (adjustable) these are just set at first but can change if
 	// scenario changes
 	private final Variable mass = new Variable("Mass", "m", "kg", 5.0, 0.5,
 			20.0, true);
@@ -42,7 +42,7 @@ public class InclinedPlane extends SimulationScenario
 	// Unknowns (calculated)
 	// 1e6 evaluates to one million as a double. useful for max values
 	private final Variable normal = new Variable("Normal force", "N", "N", 0, 0,
-			1e6, false); 
+			1e6, false);
 	private final Variable friction = new Variable("Friction force", "f", "N",
 			0, 0, 1e6, false);
 	private final Variable accel = new Variable("Acceleration", "a", "m/s²", 0,
@@ -53,18 +53,32 @@ public class InclinedPlane extends SimulationScenario
 		super("Inclined Plane");
 		variables.addAll(
 				List.of(mass, angle, mu, gravity, normal, friction, accel));
-		// TODO: when the angle changes, move the start point so the block stays
-		// on the ramp surface
-		object = new Particle(mass.getValue(),
-				new Vector2D(4, 4 * Math.tan(theta())));
+		object = new Particle(mass.getValue(), topOfRamp());
 		recompute();
 	}
 	
-	// ---------- Physics ----------
+	// Physics
+	
+	/** Horizontal length of the ramp in meters. */
+	public static final double RAMP_WIDTH = 4.0;
 	
 	private double theta()
 	{
 		return Math.toRadians(angle.getValue());
+	}
+	
+	public double getAngleRadians()
+	{
+		return theta();
+	}
+	
+	/**
+	 * Where the block starts: the top corner of the ramp for the current angle.
+	 */
+	private Vector2D topOfRamp()
+	{
+		double x = RAMP_WIDTH - 0.3; // so the block sits on the slope
+		return new Vector2D(x, x * Math.tan(theta()));
 	}
 	
 	/** Unit vector pointing down the slope. */
@@ -85,7 +99,8 @@ public class InclinedPlane extends SimulationScenario
 	}
 	
 	/**
-	 * True when gravity along the slope is greater than maximum static friction (tan > μ).
+	 * True when gravity along the slope is greater than maximum static friction
+	 * (tan > μ).
 	 */
 	public boolean isSliding()
 	{
@@ -96,8 +111,8 @@ public class InclinedPlane extends SimulationScenario
 	{
 		double alongSlope = mass.getValue() * gravity.getValue()
 				* Math.sin(theta());
-
-		return isSliding() ? mu.getValue() * getNormalForce() : alongSlope; 
+		
+		return isSliding() ? mu.getValue() * getNormalForce() : alongSlope;
 	}
 	
 	public double getAcceleration()
@@ -123,6 +138,8 @@ public class InclinedPlane extends SimulationScenario
 	{
 		return theta();
 	}
+	
+	// SimulationScenario
 	
 	@Override
 	public List<Force> getForces()
@@ -156,20 +173,20 @@ public class InclinedPlane extends SimulationScenario
 	@Override
 	public void update(double dt)
 	{
+		if (object.getPosition().getY() <= 0) return; // stop when we reach the
+														// bottom
 		object.clearForces();
 		for (Force f : getForces())
 		{
 			object.applyForce(f);
 		}
 		object.update(dt);
-		// TODO: stop the block when it reaches the bottom of the ramp
-		// (position.y <= 0)
 	}
 	
 	@Override
 	public void reset()
 	{
-		super.reset();
+		object = new Particle(mass.getValue(), topOfRamp());
 		recompute();
 	}
 	
