@@ -18,7 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Purpose: Stores the state (mass, position, velocity, acceleration) of an object
+ * Purpose: Stores the state (mass, position, velocity, acceleration) of a
+ * Physics Object
+ * 
  * 
  */
 public abstract class PhysicsObject
@@ -62,6 +64,16 @@ public abstract class PhysicsObject
 	 * Advance the object by dt seconds. Subclasses choose the integration step.
 	 */
 	public abstract void update(double dt);
+	
+	public void setPosition(Vector2D position)
+	{
+		this.position = position;
+	}
+	
+	public void setVelocity(Vector2D velocity)
+	{
+		this.velocity = velocity;
+	}
 	
 	public double getMass()
 	{

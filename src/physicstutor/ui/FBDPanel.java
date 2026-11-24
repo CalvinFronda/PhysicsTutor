@@ -11,10 +11,11 @@
  *         Oracle
  *         AffineTransform
  *         https://docs.oracle.com/javase/8/docs/api/java/awt/geom/AffineTransform.html
- * 		
+ * 
  *         Version: 2026-11-10
  */
 package physicstutor.ui;
+
 import physicstutor.learning.FreeBodyDiagram;
 import physicstutor.physics.Force;
 import physicstutor.physics.ForceType;
@@ -35,9 +36,9 @@ import java.awt.geom.Path2D;
 
 /**
  * Purpose: The FBDPanel draws a FreeBodyDiagram: a box with one arrow pointing
- * to where the
- * force is acting.
- *
+ * to where the force is acting.
+ * 
+ * FBDPanel is-a JPanel
  */
 public class FBDPanel extends JPanel
 {
@@ -70,7 +71,7 @@ public class FBDPanel extends JPanel
 		if (diagram == null || diagram.getForces().isEmpty())
 		{
 			g2.setColor(Color.GRAY);
-			g2.drawString("No forces to show", cx - 50, cy); 
+			g2.drawString("No forces to show", cx - 50, cy);
 			g2.dispose();
 			return;
 		}
@@ -85,21 +86,24 @@ public class FBDPanel extends JPanel
 		g2.translate(cx, cy);
 		if (diagram.hasSurface())
 		{
-			g2.rotate(-diagram.getSurfaceAngle());   // screen y points down, so negate to tilt up-right
-
-			Stroke dashed = new BasicStroke(2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER,
-					10f, new float[] { 6f, 6f }, 0f);
+			g2.rotate(-diagram.getSurfaceAngle()); // screen y points down, so
+													// negate to tilt up-right
+			
+			Stroke dashed = new BasicStroke(2f, BasicStroke.CAP_BUTT,
+					BasicStroke.JOIN_MITER, 10f, new float[] { 6f, 6f }, 0f);
 			g2.setStroke(dashed);
 			g2.setColor(Color.GRAY);
-			int len = getWidth() + getHeight();      // long enough to cross the whole panel
-			g2.drawLine(-len, 18, len, 18);          // 18 = half the block, so the line runs under it
+			int len = getWidth() + getHeight(); // long enough to cross the
+												// whole panel
+			g2.drawLine(-len, 18, len, 18); // 18 = half the block, so the line
+											// runs under it
 		}
 		g2.setStroke(new BasicStroke(1.5f)); // object box
-		g2.setColor(Color.LIGHT_GRAY);  // background color of object
+		g2.setColor(Color.LIGHT_GRAY); // background color of object
 		g2.fillRect(-18, -18, 36, 36);
 		g2.setColor(Color.DARK_GRAY); // border around object
 		g2.drawRect(-18, -18, 36, 36);
-		g2.setTransform(saved);                      // arrows are drawn unrotated
+		g2.setTransform(saved); // arrows are drawn unrotated
 		
 		g2.setFont(getFont().deriveFont(Font.PLAIN, 13f));
 		for (Force f : diagram.getForces())
@@ -113,7 +117,7 @@ public class FBDPanel extends JPanel
 		
 		// Net force as a dashed arrow
 		Vector2D net = diagram.getNetForce();
-		if (net.magnitude() > 1e-6)
+		if (diagram.getForces().size() > 1 && net.magnitude() > 1e-6)
 		{
 			Stroke dashed = new BasicStroke(2f, BasicStroke.CAP_BUTT,
 					BasicStroke.JOIN_MITER, 10f, new float[] { 6f, 5f }, 0f);
@@ -122,8 +126,6 @@ public class FBDPanel extends JPanel
 			drawLabel(g2, cx, cy, net.scale(pixelsPerNewton), "Net",
 					Color.BLACK);
 		}
-		
-
 		
 		g2.dispose();
 	}
@@ -136,29 +138,31 @@ public class FBDPanel extends JPanel
 			Color color, Stroke stroke)
 	{
 		final double HEAD_LENGTH = 12;
-
+		
 		double ex = cx + v.getX();
 		double ey = cy - v.getY();
 		double angle = Math.atan2(ey - cy, ex - cx);
 		double length = Math.hypot(ex - cx, ey - cy);
-
-		// Stop the line where the arrowhead begins so it doesn't poke through the tip
+		
+		// Stop the line where the arrowhead begins so it doesn't poke through
+		// the tip
 		double lineLength = Math.max(0, length - HEAD_LENGTH);
 		double lx = cx + Math.cos(angle) * lineLength;
 		double ly = cy + Math.sin(angle) * lineLength;
-
+		
 		g2.setColor(color);
 		g2.setStroke(stroke != null ? stroke
-				: new BasicStroke(3f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER));
+				: new BasicStroke(3f, BasicStroke.CAP_BUTT,
+						BasicStroke.JOIN_MITER));
 		g2.draw(new Line2D.Double(cx, cy, lx, ly));
-
+		
 		// Arrowhead: tip at (0, 0), base HEAD_LENGTH behind it
 		Path2D head = new Path2D.Double();
 		head.moveTo(0, 0);
 		head.lineTo(-HEAD_LENGTH, -6);
 		head.lineTo(-HEAD_LENGTH, 6);
 		head.closePath();
-
+		
 		AffineTransform at = AffineTransform.getTranslateInstance(ex, ey);
 		at.rotate(angle);
 		g2.fill(at.createTransformedShape(head));

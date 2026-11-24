@@ -14,7 +14,7 @@
 package physicstutor.ui;
 
 import physicstutor.simulation.SimulationScenario;
-import physicstutor.simulation.InclinedPlane;
+import physicstutor.simulation.*;
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -47,7 +47,7 @@ public class MainWindow extends JFrame
 		super("Physics Tutor");
 		
 		scenarios.add(new InclinedPlane());
-		
+		scenarios.add(new CircularMotion());
 		
 		modes.add(new AnalyzeMode());
 		modes.add(new ExploreMode());

@@ -24,12 +24,13 @@ import java.util.List;
 /**
  * Purpose: Incline Plane scenario. Manages forces that act on an object on an
  * incline
+ * 
+ * InclinedPlane is-a SimulationScenario
  *
  */
 public class InclinedPlane extends SimulationScenario
 {
-	// Knowns (adjustable) these are just set at first but can change if
-	// scenario changes
+	// Knowns (adjustable)
 	private final Variable mass = new Variable("Mass", "m", "kg", 5.0, 0.5,
 			20.0, true);
 	private final Variable angle = new Variable("Ramp angle", "θ", "°", 30.0,
